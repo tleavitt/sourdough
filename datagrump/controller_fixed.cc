@@ -1,13 +1,9 @@
-#include <cstdlib>
 #include <iostream>
-#include <assert.h>
 
 #include "controller.hh"
 #include "timestamp.hh"
 
 using namespace std;
-
-#define MIN_WINDOW_SIZE ((unsigned int)5)
 
 /* Default constructor */
 Controller::Controller( const bool debug )
@@ -17,12 +13,15 @@ Controller::Controller( const bool debug )
 /* Get current window size, in datagrams */
 unsigned int Controller::window_size()
 {
+  /* Default: fixed window size of 100 outstanding datagrams */
+  unsigned int the_window_size = 110;
+
   if ( debug_ ) {
     cerr << "At time " << timestamp_ms()
-	 << " window size is " << cwnd << endl;
+	 << " window size is " << the_window_size << endl;
   }
 
-  return cwnd;
+  return the_window_size;
 }
 
 /* A datagram was sent */
@@ -51,22 +50,7 @@ void Controller::ack_received( const uint64_t sequence_number_acked,
 			       const uint64_t timestamp_ack_received )
                                /* when the ack was received (by sender) */
 {
-  if (next_ack_expected == sequence_number_acked) {
-    /* All is well, increment ack count. */
-    n_recent_acks++;
-    if (n_recent_acks == cwnd) {
-      /* Receiver acked a full window, increase send window. */
-      cwnd += add_factor;
-      n_recent_acks = 0;
-    }
-    next_ack_expected++;    
-  } else { /* Congestion! */
-    /* TODO: this is a dumb way to detect congestion, it counts
-       reordering as congestion. */
-    n_recent_acks = 0;
-    cwnd = max(cwnd / mult_factor, MIN_WINDOW_SIZE);
-    /* Don't update next_ack_expected. */
-  }
+  /* Default: take no action */
 
   if ( debug_ ) {
     cerr << "At time " << timestamp_ack_received

@@ -11,6 +11,12 @@ private:
   bool debug_; /* Enables debugging output */
 
   /* Add member variables here */
+  unsigned int cwnd = 35;
+  unsigned int add_factor = 1;
+  unsigned int mult_factor = 2; /* Multiply by 1/mult_factor */
+
+  unsigned int n_recent_acks = 0; /* Number of acks received since last window increase. */
+  uint64_t next_ack_expected = 0; /* */
 
 public:
   /* Public interface for the congestion controller */
