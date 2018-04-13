@@ -12,8 +12,9 @@ private:
 
   /* Add member variables here */
   unsigned int cwnd = 35;
-  unsigned int add_factor = 1;
-  unsigned int mult_factor = 2; /* Multiply by 1/mult_factor */
+  unsigned int add_inc = 1;
+  unsigned int add_dec = 2;
+  float mult_factor = 0.5; /* Multiply mult_factor */
 
   unsigned int n_recent_acks = 0; /* Number of acks received since last window increase. */
 

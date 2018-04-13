@@ -46,7 +46,7 @@ void Controller::datagram_was_sent( const uint64_t sequence_number,
 static bool is_congested(const uint64_t send_timestamp_acked,
                          const uint64_t timestamp_ack_received )
 {
-  return timestamp_ack_received - send_timestamp_acked > 100;
+  return timestamp_ack_received - send_timestamp_acked > 125;
 }
 
 /* An ack was received */
@@ -64,14 +64,15 @@ void Controller::ack_received( const uint64_t sequence_number_acked,
                   timestamp_ack_received) ) 
   { /* Congestion! */
     n_recent_acks = 0;
-    cwnd = max(cwnd / mult_factor, MIN_WINDOW_SIZE);
+    // cwnd = (unsigned int)max(int(cwnd * mult_factor), MIN_WINDOW_SIZE);
+    cwnd = (unsigned int)max(cwnd - add_dec, MIN_WINDOW_SIZE);
     /* Don't update next_ack_expected. */
   } else {
     /* All is well, increment ack count. */
     n_recent_acks++;
     if (n_recent_acks == cwnd) {
       /* Receiver acked a full window, increase send window. */
-      cwnd += add_factor;
+      cwnd += add_inc;
       n_recent_acks = 0;
     }
   }
