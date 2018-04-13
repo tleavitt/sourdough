@@ -20,3 +20,5 @@ Makefile.in
 /compile
 /datagrump/sender
 /datagrump/receiver
+.git_nodelete
+
