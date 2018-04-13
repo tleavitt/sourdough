@@ -43,16 +43,10 @@ void Controller::datagram_was_sent( const uint64_t sequence_number,
   }
 }
 
-static bool is_congested(const uint64_t sequence_number_acked,
-             /* what sequence number was acknowledged */
-             const uint64_t send_timestamp_acked,
-             /* when the acknowledged datagram was sent (sender's clock) */
-             const uint64_t recv_timestamp_acked,
-             /* when the acknowledged datagram was received (receiver's clock)*/
-             const uint64_t timestamp_ack_received )
-                               /* when the ack was received (by sender) */
+static bool is_congested(const uint64_t send_timestamp_acked,
+                         const uint64_t timestamp_ack_received )
 {
-
+  return timestamp_ack_received - send_timestamp_acked > 100;
 }
 
 /* An ack was received */
@@ -66,9 +60,9 @@ void Controller::ack_received( const uint64_t sequence_number_acked,
                                /* when the ack was received (by sender) */
 {
 
-  if (is_congested() ) { /* Congestion! */
-    /* TODO: this is a dumb way to detect congestion, it counts
-       reordering as congestion. */
+  if (is_congested(send_timestamp_acked, 
+                  timestamp_ack_received) ) 
+  { /* Congestion! */
     n_recent_acks = 0;
     cwnd = max(cwnd / mult_factor, MIN_WINDOW_SIZE);
     /* Don't update next_ack_expected. */
@@ -80,8 +74,7 @@ void Controller::ack_received( const uint64_t sequence_number_acked,
       cwnd += add_factor;
       n_recent_acks = 0;
     }
-    next_ack_expected++;    
-
+  }
 
   if ( debug_ ) {
     cerr << "At time " << timestamp_ack_received

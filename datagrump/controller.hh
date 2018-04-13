@@ -16,7 +16,6 @@ private:
   unsigned int mult_factor = 2; /* Multiply by 1/mult_factor */
 
   unsigned int n_recent_acks = 0; /* Number of acks received since last window increase. */
-  uint64_t next_ack_expected = 0; /* */
 
 public:
   /* Public interface for the congestion controller */
