@@ -19,7 +19,9 @@ unsigned int Controller::window_size()
 {
   if ( debug_ ) {
     cerr << "At time " << timestamp_ms()
-	 << " window size is " << cwnd << endl;//this is controller
+	 << " window size is " << cwnd << endl;
+   //this is controller
+   // hi jaspreet, this is tucker
   }
 
   return cwnd;
