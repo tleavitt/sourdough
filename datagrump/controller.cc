@@ -39,6 +39,16 @@ void Controller::datagram_was_sent( const uint64_t sequence_number,
     cerr << "At time " << send_timestamp
 	 << " sent datagram " << sequence_number << " (timeout = " << after_timeout << ")\n";
   }
+
+if (after_timeout) 
+  { /* Congestion! */
+    n_recent_acks = 0;
+    cwnd = (unsigned int)max(int(cwnd * mult_factor), MIN_WINDOW_SIZE);
+    // cwnd = (unsigned int)max(cwnd - add_dec, MIN_WINDOW_SIZE);
+    /* Don't update next_ack_expected. */
+  } 
+  
+
 }
 
 static bool is_congested(const uint64_t send_timestamp_acked,
@@ -62,10 +72,11 @@ void Controller::ack_received( const uint64_t sequence_number_acked,
                   timestamp_ack_received) ) 
   { /* Congestion! */
     n_recent_acks = 0;
-    cwnd = (unsigned int)max(int(cwnd * mult_factor), MIN_WINDOW_SIZE);
+    cwnd = (unsigned int)max(int(cwnd - add_dec), MIN_WINDOW_SIZE);
     // cwnd = (unsigned int)max(cwnd - add_dec, MIN_WINDOW_SIZE);
     /* Don't update next_ack_expected. */
-  } else {
+  } 
+  else {
     /* All is well, increment ack count. */
     n_recent_acks++;
     if (n_recent_acks == cwnd) {
@@ -74,6 +85,8 @@ void Controller::ack_received( const uint64_t sequence_number_acked,
       n_recent_acks = 0;
     }
   }
+
+  
 
   if ( debug_ ) {
     cerr << "At time " << timestamp_ack_received
@@ -88,5 +101,5 @@ void Controller::ack_received( const uint64_t sequence_number_acked,
    before sending one more datagram */
 unsigned int Controller::timeout_ms()
 {
-  return 1000; /* timeout of one second */
+  return 500; /* timeout of one second */
 }
