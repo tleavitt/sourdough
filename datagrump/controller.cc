@@ -9,7 +9,7 @@
 using namespace std;
 
 #define MIN_WINDOW_SIZE (1.0)
-#define TICK_SIZE (50)
+#define TICK_SIZE (20)
 #define PACKET_SIZE_BYTES (1424)
 
 /* Default constructor */
@@ -40,13 +40,6 @@ void Controller::datagram_was_sent( const uint64_t sequence_number,
 {
 
   send_seqno = max(sequence_number, send_seqno);
-
-  // if (after_timeout) {
-  //    probably an outage... 
-  //   cwnd = 1;
-
-  //   state = 0;
-  // }
 
   if ( debug_ ) {
     cerr << "At time " << send_timestamp
@@ -81,18 +74,34 @@ void Controller::do_ewma_steady(const uint64_t tick_time) {
   double cautious_rate = rate_mean - sqrt(rate_var) * confidence_mult;
   /* expected number of bytes to clear the network in the next forecast milliseconds. */
 
+  /* calculate the forecast adaptively */
+  int forecast_ms = int(base_forecast_ms - sqrt(rate_var) * 30);
+
   /* after 100 ms, the number of bytes drained from the queue will be 100 * R.
      If we set cwnd to be exactly this value, a packet that enters the queue now
      will exit the queue 100 ms later. */
+
+  /* Adaptively adjust the forecast */
   cwnd = (unsigned int)max(cautious_rate * forecast_ms, MIN_WINDOW_SIZE);
 
   if (debug_) {
     cerr << "cur rate: " << cur_rate << endl
     << "rate mean: " << rate_mean << ", rate std: " << sqrt(rate_var) << endl
-    << "cautious_rate: " << cautious_rate << endl
+    << "cautious_rate: " << cautious_rate << ", forecast: " << forecast_ms << endl
     << "cwnd: " << cwnd << endl;
   }
 } 
+
+void Controller::do_rtt_update(const uint64_t timestamp_ack_received, 
+                               const uint64_t send_timestamp_acked) {
+
+  double cur_rtt = double(timestamp_ack_received - send_timestamp_acked);
+  if (rtt_mean == 0)
+    rtt_mean = cur_rtt;
+  else
+    rtt_mean = rtt_smooth * cur_rtt + (1 - rtt_smooth) * rtt_mean;
+  cerr << "rtt: " << rtt_mean << endl; 
+}
 
 /* An ack was received */
 void Controller::ack_received( const uint64_t sequence_number_acked,
@@ -106,24 +115,15 @@ void Controller::ack_received( const uint64_t sequence_number_acked,
 {
 
   recv_seqno = max(sequence_number_acked, recv_seqno);
+  do_rtt_update(timestamp_ack_received, send_timestamp_acked);
 
   if (state == 0)
   {
     /* slow start */
     cwnd++;
-    if (timestamp_ack_received - send_timestamp_acked > 100)
+    if (rtt_mean > 125)
       state = 1; /* switch to maintenance. */
   }
-
-  // if (timestamp_ack_received - send_timestamp_acked < 100) {
-  //   rate_mean += 0.001;
-  //   cerr << "increased rate_mean" << endl;
-  // }
-
-  // if (timestamp_ack_received - send_timestamp_acked > 125) {
-  //   rate_mean -= 0.001;
-  //   cerr << "decreased rate_mean" << endl;
-  // }
 
   if (recv_timestamp_acked > prev_tick_time + TICK_SIZE
       || sequence_number_acked == 0) /* timer tick, do update */
@@ -138,9 +138,8 @@ void Controller::ack_received( const uint64_t sequence_number_acked,
     prev_tick_seqno = recv_seqno;
   }
 
-  // if (cwnd == MIN_WINDOW_SIZE && state == 1 && timestamp_ack_received - send_timestamp_acked < 150)
-  //   /* try starting up again. */
-  //   state = 0;
+  // if (state == 1 && cwnd == MIN_WINDOW_SIZE && rtt_mean < 100)
+  //   state = 0; /* back to slow start */
 
   if ( debug_ ) {
     cerr << "At time " << timestamp_ack_received

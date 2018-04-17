@@ -12,18 +12,19 @@ private:
   int state = 0; /* 0: slow start, 1: steady state */
 
   /* Add member variables here */
-  double rate_mean; /* ewma link rate .*/
-  double rate_var; /* ewma of rate variance. */
+  double rate_mean = 0; /* ewma of link rate. */
+  double rate_var = 0; /* ewma of rate variance. */
+  double rtt_mean = 0; /* ewma of round trip time. */
 
-
+  double rtt_smooth = 0.05;
 
   double mean_smooth = 0.3; /* smoothing parameter for rate mean */
-  double var_smooth = 0.5; /* smoothing parameter for rate var */
+  double var_smooth = 0.3; /* smoothing parameter for rate var */
 
   double confidence_mult = 0.75; /* use mean - confidence_mult * var as the rate estimate. */
 
-  unsigned int cwnd = 1; /* initial estimate for cwnd. */ 
-  int forecast_ms = 100; /* number of steps ahead to forecast. */
+  unsigned int cwnd = 1; /* congestion window. */ 
+  int base_forecast_ms = 120; /* forecast time. */
 
   uint64_t prev_tick_time = 0; /* last recv time that we did an update. */
   uint64_t prev_tick_seqno = 0; /* receiver seqno at last tick. */
@@ -57,6 +58,8 @@ public:
      before sending one more datagram */
   unsigned int timeout_ms();
 
+  void do_rtt_update(const uint64_t timestamp_ack_received, 
+                               const uint64_t send_timestamp_acked);
   void do_ewma_probe(const uint64_t tick_time);
   void do_ewma_steady(const uint64_t tick_time);
 
