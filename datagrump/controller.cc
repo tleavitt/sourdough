@@ -1,17 +1,22 @@
 #include <cstdlib>
 #include <iostream>
 #include <assert.h>
+#include <math.h>       
 
 #include "controller.hh"
 #include "timestamp.hh"
 
 using namespace std;
 
-#define MIN_WINDOW_SIZE (5)
+#define MIN_WINDOW_SIZE (1.0)
+#define TICK_SIZE (50)
+#define PACKET_SIZE_BYTES (1424)
 
 /* Default constructor */
 Controller::Controller( const bool debug )
-  : debug_( debug )
+  : debug_( debug ),
+    rate_mean(10),
+    rate_var( 0 )
 {}
 
 /* Get current window size, in datagrams */
@@ -19,7 +24,7 @@ unsigned int Controller::window_size()
 {
   if ( debug_ ) {
     cerr << "At time " << timestamp_ms()
-     << " window size is " << cwnd << endl;
+	 << " window size is " << cwnd << endl;
   }
 
   return cwnd;
@@ -27,73 +32,121 @@ unsigned int Controller::window_size()
 
 /* A datagram was sent */
 void Controller::datagram_was_sent( const uint64_t sequence_number,
-                    /* of the sent datagram */
-                    const uint64_t send_timestamp,
+				    /* of the sent datagram */
+				    const uint64_t send_timestamp,
                                     /* in milliseconds */
-                    const bool after_timeout
-                    /* datagram was sent because of a timeout */ )
+				    const bool after_timeout
+				    /* datagram was sent because of a timeout */ )
 {
-  /* Default: take no action */
+
+  send_seqno = max(sequence_number, send_seqno);
+
+  // if (after_timeout) {
+  //    probably an outage... 
+  //   cwnd = 1;
+
+  //   state = 0;
+  // }
 
   if ( debug_ ) {
     cerr << "At time " << send_timestamp
-     << " sent datagram " << sequence_number << " (timeout = " << after_timeout << ")\n";
+	 << " sent datagram " << sequence_number << " (timeout = " << after_timeout << ")\n";
   }
 
-if (after_timeout) 
-  { /* Congestion! */
-    n_recent_acks = 0;
-    cwnd = (unsigned int)max(int(cwnd * mult_factor), MIN_WINDOW_SIZE);
-    // cwnd = (unsigned int)max(cwnd - add_dec, MIN_WINDOW_SIZE);
-    /* Don't update next_ack_expected. */
-  } 
-  
-
 }
 
-static bool is_congested(const uint64_t send_timestamp_acked,
-                         const uint64_t timestamp_ack_received )
-{
-  return timestamp_ack_received - send_timestamp_acked > 125;
-}
+void Controller::do_ewma_probe(const uint64_t tick_time) {
+
+  double cur_rate = double(recv_seqno - prev_tick_seqno) / double(tick_time - prev_tick_time);
+  rate_mean = cur_rate;
+  rate_var = sqrt(rate_mean);
+
+  if (debug_) {
+    cerr << "cur rate: " << cur_rate << endl
+    << "rate mean: " << rate_mean << ", rate var: " << rate_var << endl
+    << "cwnd: " << cwnd << endl;
+  }
+} 
+
+void Controller::do_ewma_steady(const uint64_t tick_time) {
+
+  double cur_rate = double(recv_seqno - prev_tick_seqno) / double(tick_time - prev_tick_time);
+
+  rate_mean = mean_smooth * cur_rate + (1 - mean_smooth) * rate_mean;
+
+  /* calculate the rate variance. */
+  double sqdev = (cur_rate - rate_mean) * (cur_rate - rate_mean);
+  rate_var = var_smooth * sqdev + (1 - var_smooth) * rate_var;
+
+  double cautious_rate = rate_mean - sqrt(rate_var) * confidence_mult;
+  /* expected number of bytes to clear the network in the next forecast milliseconds. */
+
+  /* after 100 ms, the number of bytes drained from the queue will be 100 * R.
+     If we set cwnd to be exactly this value, a packet that enters the queue now
+     will exit the queue 100 ms later. */
+  cwnd = (unsigned int)max(cautious_rate * forecast_ms, MIN_WINDOW_SIZE);
+
+  if (debug_) {
+    cerr << "cur rate: " << cur_rate << endl
+    << "rate mean: " << rate_mean << ", rate std: " << sqrt(rate_var) << endl
+    << "cautious_rate: " << cautious_rate << endl
+    << "cwnd: " << cwnd << endl;
+  }
+} 
 
 /* An ack was received */
 void Controller::ack_received( const uint64_t sequence_number_acked,
-                   /* what sequence number was acknowledged */
-                   const uint64_t send_timestamp_acked,
-                   /* when the acknowledged datagram was sent (sender's clock) */
-                   const uint64_t recv_timestamp_acked,
-                   /* when the acknowledged datagram was received (receiver's clock)*/
-                   const uint64_t timestamp_ack_received )
+			       /* what sequence number was acknowledged */
+			       const uint64_t send_timestamp_acked,
+			       /* when the acknowledged datagram was sent (sender's clock) */
+			       const uint64_t recv_timestamp_acked,
+			       /* when the acknowledged datagram was received (receiver's clock)*/
+			       const uint64_t timestamp_ack_received )
                                /* when the ack was received (by sender) */
 {
 
-  if (is_congested(send_timestamp_acked, 
-                  timestamp_ack_received) ) 
-  { /* Congestion! */
-    n_recent_acks = 0;
-    cwnd = (unsigned int)max(int(cwnd - add_dec), MIN_WINDOW_SIZE);
-    // cwnd = (unsigned int)max(cwnd - add_dec, MIN_WINDOW_SIZE);
-    /* Don't update next_ack_expected. */
-  } 
-  else {
-    /* All is well, increment ack count. */
-    n_recent_acks++;
-    if (n_recent_acks == cwnd) {
-      /* Receiver acked a full window, increase send window. */
-      cwnd += add_inc;
-      n_recent_acks = 0;
-    }
+  recv_seqno = max(sequence_number_acked, recv_seqno);
+
+  if (state == 0)
+  {
+    /* slow start */
+    cwnd++;
+    if (timestamp_ack_received - send_timestamp_acked > 100)
+      state = 1; /* switch to maintenance. */
   }
 
-  
+  // if (timestamp_ack_received - send_timestamp_acked < 100) {
+  //   rate_mean += 0.001;
+  //   cerr << "increased rate_mean" << endl;
+  // }
+
+  // if (timestamp_ack_received - send_timestamp_acked > 125) {
+  //   rate_mean -= 0.001;
+  //   cerr << "decreased rate_mean" << endl;
+  // }
+
+  if (recv_timestamp_acked > prev_tick_time + TICK_SIZE
+      || sequence_number_acked == 0) /* timer tick, do update */
+  {
+
+    if (state == 0) /* probe the network capacity */
+      do_ewma_probe(recv_timestamp_acked); 
+    else /* maintain steady state */
+      do_ewma_steady(recv_timestamp_acked); 
+
+    prev_tick_time = recv_timestamp_acked;
+    prev_tick_seqno = recv_seqno;
+  }
+
+  // if (cwnd == MIN_WINDOW_SIZE && state == 1 && timestamp_ack_received - send_timestamp_acked < 150)
+  //   /* try starting up again. */
+  //   state = 0;
 
   if ( debug_ ) {
     cerr << "At time " << timestamp_ack_received
-     << " received ack for datagram " << sequence_number_acked
-     << " (send @ time " << send_timestamp_acked
-     << ", received @ time " << recv_timestamp_acked << " by receiver's clock)"
-     << endl;
+	 << " received ack for datagram " << sequence_number_acked
+	 << " (send @ time " << send_timestamp_acked
+	 << ", received @ time " << recv_timestamp_acked << " by receiver's clock)" << endl;
   }
 }
 

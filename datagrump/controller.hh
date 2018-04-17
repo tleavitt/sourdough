@@ -9,15 +9,27 @@ class Controller
 {
 private:
   bool debug_; /* Enables debugging output */
+  int state = 0; /* 0: slow start, 1: steady state */
 
   /* Add member variables here */
-  unsigned int cwnd = 35;
-  unsigned int add_dec = 1;
-  unsigned int add_inc = 1;
+  double rate_mean; /* ewma link rate .*/
+  double rate_var; /* ewma of rate variance. */
 
-  float mult_factor = 0.7; /* Multiply mult_factor */
 
-  unsigned int n_recent_acks = 0; /* Number of acks received since last window increase. */
+
+  double mean_smooth = 0.3; /* smoothing parameter for rate mean */
+  double var_smooth = 0.5; /* smoothing parameter for rate var */
+
+  double confidence_mult = 0.75; /* use mean - confidence_mult * var as the rate estimate. */
+
+  unsigned int cwnd = 1; /* initial estimate for cwnd. */ 
+  int forecast_ms = 100; /* number of steps ahead to forecast. */
+
+  uint64_t prev_tick_time = 0; /* last recv time that we did an update. */
+  uint64_t prev_tick_seqno = 0; /* receiver seqno at last tick. */
+
+  uint64_t send_seqno = 0; /* last sent seqno. */
+  uint64_t recv_seqno = 0; /* last received seqno. */
 
 public:
   /* Public interface for the congestion controller */
@@ -32,18 +44,22 @@ public:
 
   /* A datagram was sent */
   void datagram_was_sent( const uint64_t sequence_number,
-              const uint64_t send_timestamp,
-              const bool after_timeout );
+			  const uint64_t send_timestamp,
+			  const bool after_timeout );
 
   /* An ack was received */
   void ack_received( const uint64_t sequence_number_acked,
-             const uint64_t send_timestamp_acked,
-             const uint64_t recv_timestamp_acked,
-             const uint64_t timestamp_ack_received );
+		     const uint64_t send_timestamp_acked,
+		     const uint64_t recv_timestamp_acked,
+		     const uint64_t timestamp_ack_received );
 
   /* How long to wait (in milliseconds) if there are no acks
      before sending one more datagram */
   unsigned int timeout_ms();
+
+  void do_ewma_probe(const uint64_t tick_time);
+  void do_ewma_steady(const uint64_t tick_time);
+
 };
 
 #endif
