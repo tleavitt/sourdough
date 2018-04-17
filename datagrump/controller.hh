@@ -17,14 +17,16 @@ private:
   double rtt_mean = 0; /* ewma of round trip time. */
 
   double rtt_smooth = 0.05;
+  double bdp_mult = 2;
 
   double mean_smooth = 0.3; /* smoothing parameter for rate mean */
-  double var_smooth = 0.3; /* smoothing parameter for rate var */
+  double var_smooth = 0.5; /* smoothing parameter for rate var */
 
   double confidence_mult = 0.75; /* use mean - confidence_mult * var as the rate estimate. */
 
   unsigned int cwnd = 1; /* congestion window. */ 
-  int base_forecast_ms = 120; /* forecast time. */
+  int base_forecast_ms = 100; /* forecast time. */
+  int forecast_scaling = 0; /* controls how much we adapt the forecast to network conditions. */
 
   uint64_t prev_tick_time = 0; /* last recv time that we did an update. */
   uint64_t prev_tick_seqno = 0; /* receiver seqno at last tick. */

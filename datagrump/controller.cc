@@ -8,7 +8,7 @@
 
 using namespace std;
 
-#define MIN_WINDOW_SIZE (1.0)
+#define MIN_WINDOW_SIZE (5.0)
 #define TICK_SIZE (20)
 #define PACKET_SIZE_BYTES (1424)
 
@@ -75,14 +75,24 @@ void Controller::do_ewma_steady(const uint64_t tick_time) {
   /* expected number of bytes to clear the network in the next forecast milliseconds. */
 
   /* calculate the forecast adaptively */
-  int forecast_ms = int(base_forecast_ms - sqrt(rate_var) * 30);
+  int forecast_ms = int(base_forecast_ms - sqrt(rate_var) * forecast_scaling);
+
+  double bdp = cur_rate * rtt_mean;
 
   /* after 100 ms, the number of bytes drained from the queue will be 100 * R.
      If we set cwnd to be exactly this value, a packet that enters the queue now
      will exit the queue 100 ms later. */
 
   /* Adaptively adjust the forecast */
+  // cwnd = (unsigned int)max(cautious_rate * forecast_ms, MIN_WINDOW_SIZE);
   cwnd = (unsigned int)max(cautious_rate * forecast_ms, MIN_WINDOW_SIZE);
+
+  /* Bound cwnd to be less than the */
+  if (double(cwnd) > bdp_mult * bdp) {
+    if (debug_)
+      cerr << "bounding cwnd: " << cwnd << " to " << bdp_mult * bdp << endl;
+    cwnd = (unsigned int)max(bdp_mult * bdp, MIN_WINDOW_SIZE);
+  }
 
   if (debug_) {
     cerr << "cur rate: " << cur_rate << endl
@@ -100,7 +110,8 @@ void Controller::do_rtt_update(const uint64_t timestamp_ack_received,
     rtt_mean = cur_rtt;
   else
     rtt_mean = rtt_smooth * cur_rtt + (1 - rtt_smooth) * rtt_mean;
-  cerr << "rtt: " << rtt_mean << endl; 
+  if (debug_)
+    cerr << "rtt: " << rtt_mean << endl; 
 }
 
 /* An ack was received */
