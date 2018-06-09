@@ -2,6 +2,8 @@
 
 Stanford CS244 - Spring 2018
 
+Depends: mahimahi (https://github.com/ravinet/mahimahi)
+
 To build:
 
 	$ ./autogen.sh
