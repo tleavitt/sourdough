@@ -9,8 +9,9 @@ To build:
 	$ make
 
 To run:
-        $ cd datagrump
-        $ sudo sysctl -w net.ipv4.ip_forward=1
+
+	$ cd datagrump
+	$ sudo sysctl -w net.ipv4.ip_forward=1
 	$ ./collect_data_bg.sh 10 ctcp throughput.log
 
 This will run a CTCP sender and receiver over a 240 Mbps link with 10 Mbps 
