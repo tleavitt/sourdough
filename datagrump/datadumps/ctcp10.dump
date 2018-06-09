@@ -1,0 +1,12 @@
+args: 240mbps_link, 10, nodebug, ctcp
+Listening on :::9090
+Died on std::runtime_error: mm-delay: please run as non-root
+
+Average capacity: 240.67 Mbits/s
+Average throughput: 127.24 Mbits/s (52.9% utilization)
+95th percentile per-packet queueing delay: 107 ms
+95th percentile signal delay: 65 ms
+
+ done.
+
+

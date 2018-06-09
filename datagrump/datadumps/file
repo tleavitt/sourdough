@@ -1,0 +1,35 @@
+args: 240mbps_link, 17, nodebug, ctcp
+Listening on :::9090
+setting bgrate
+Startind sender with bg_rate: 17, debug: 0, use_ctcp: 1
+cwnd: 1 dwnd: 0
+cwnd_: 1 dwnd_: 0
+background send period: 705 us
+Sending to 100.64.0.1:9090
+background traffic is: on
+loss!
+timestamp: 164, average throughput: 0.139562 Mpbs
+timestamp: 328, average throughput: 0.279124 Mpbs
+timestamp: 492, average throughput: 0.976935 Mpbs
+timestamp: 656, average throughput: 3.83796 Mpbs
+timestamp: 820, average throughput: 15.3169 Mpbs
+timestamp: 921, average throughput: 57.2873 Mpbs
+timestamp: 1022, average throughput: 106.429 Mpbs
+timestamp: 1123, average throughput: 161.254 Mpbs
+timestamp: 1224, average throughput: 191.102 Mpbs
+loss!
+loss!
+timestamp: 1325, average throughput: 203.477 Mpbs
+loss!
+timestamp: 1426, average throughput: 172.669 Mpbs
+timestamp: 1537, average throughput: 127.111 Mpbs
+timestamp: 1662, average throughput: 108.462 Mpbs
+timestamp: 1786, average throughput: 95.6696 Mpbs
+timestamp: 1909, average throughput: 96.3094 Mpbs
+timestamp: 2010, average throughput: 106.565 Mpbs
+timestamp: 2115, average throughput: 89.7945 Mpbs
+timestamp: 2237, average throughput: 87.0622 Mpbs
+timestamp: 2339, average throughput: 105.576 Mpbs
+timestamp: 2443, average throughput: 111.549 Mpbs
+timestamp: 2567, average throughput: 106.535 Mpbs
+timestamp: 2669, average throughput: 115.312 Mpbs

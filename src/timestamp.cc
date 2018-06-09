@@ -34,3 +34,11 @@ uint64_t timestamp_ms( const timespec & ts )
   const static uint64_t EPOCH = timestamp_ms_raw( current_time() );
   return timestamp_ms_raw( ts ) - EPOCH;
 }
+
+uint64_t timestamp_us()
+{
+  timespec ts;
+  SystemCall( "clock_gettime", clock_gettime( CLOCK_REALTIME, &ts ) );
+  const uint64_t nanos = ts.tv_sec * BILLION + ts.tv_nsec;
+  return nanos / 1000;
+}

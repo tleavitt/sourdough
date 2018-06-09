@@ -1,0 +1,138 @@
+Global symbol "$bgrate" requires explicit package name (did you forget to declare "my $bgrate"?) at ./run-trace-loss line 27.
+Execution of ./run-trace-loss aborted due to compilation errors.
+args: 240mbps_link, 0.000001, nodebug, ctcp
+Use of uninitialized value within @command in string eq at ./run-trace-loss line 60.
+Died at ./run-trace-loss line 60.
+Listening on :::9090
+args: 240mbps_link, 0.000001, nodebug, ctcp
+Can't exec "mm-delay 40 mm-loss uplink 0.000001 mm-link /usr/local/share/mahimahi/traces/240mbps_link /usr/local/share/mahimahi/traces/240mbps_link": No such file or directory at ./run-trace-loss line 56.
+
+Average capacity: 240.68 Mbits/s
+Average throughput: 98.41 Mbits/s (40.9% utilization)
+95th percentile per-packet queueing delay: 83 ms
+95th percentile signal delay: 22 ms
+
+ done.
+
+
+args: 240mbps_link, 0.000001, nodebug, ctcp
+Listening on :::9090
+setting bgrate
+Startind sender with bg_rate: 0, debug: 0, use_ctcp: 1
+cwnd: 1 dwnd: 0
+cwnd_: 1 dwnd_: 0
+background send period: 0 us
+background send rate: Died on std::runtime_error: `bash -c ./sender $MAHIMAHI_BASE 9090 0.000001 nodebug ctcp': process died on signal 8
+Died on std::runtime_error: `packetshell': process exited with failure status 1
+Died on std::runtime_error: `mm-link /usr/local/share/mahimahi/traces/240mbps_link /usr/local/share/mahimahi/traces/240mbps_link --uplink-log=/home/project/uplink_log -- bash -c ./sender $MAHIMAHI_BASE 9090 0.000001 nodebug ctcp': process exited with failure status 1
+Died on std::runtime_error: `packetshell': process exited with failure status 1
+
+Average capacity: 241.23 Mbits/s
+Average throughput: 0.00 Mbits/s (0.0% utilization)
+95th percentile per-packet queueing delay: 1 ms
+95th percentile signal delay: 1 ms
+MS_PER_BIN is too large for length of trace at /usr/local/bin/mm-throughput-graph line 183, <> line 8192.
+mm-throughput-graph exited with error. NOT uploading at ./run-trace line 74.
+Global symbol "$uplink_idx" requires explicit package name (did you forget to declare "my $uplink_idx"?) at ./run-trace-loss line 60.
+Execution of ./run-trace-loss aborted due to compilation errors.
+args: 240mbps_link, 0.000001, nodebug, ctcp
+Listening on :::9090
+setting bgrate
+Startind sender with bg_rate: 0, debug: 0, use_ctcp: 1
+cwnd: 1 dwnd: 0
+cwnd_: 1 dwnd_: 0
+background send period: 0 us
+background send rate: Died on std::runtime_error: `bash -c ./sender $MAHIMAHI_BASE 9090 0 nodebug ctcp': process died on signal 8
+Died on std::runtime_error: `packetshell': process exited with failure status 1
+Died on std::runtime_error: `mm-link /usr/local/share/mahimahi/traces/240mbps_link /usr/local/share/mahimahi/traces/240mbps_link --uplink-log=/home/project/uplink_log -- bash -c ./sender $MAHIMAHI_BASE 9090 0 nodebug ctcp': process exited with failure status 1
+Died on std::runtime_error: `packetshell': process exited with failure status 1
+Died on std::runtime_error: `mm-loss uplink 0.000001 mm-link /usr/local/share/mahimahi/traces/240mbps_link /usr/local/share/mahimahi/traces/240mbps_link --uplink-log=/home/project/uplink_log -- bash -c ./sender $MAHIMAHI_BASE 9090 0 nodebug ctcp': process exited with failure status 1
+Died on std::runtime_error: `packetshell': process exited with failure status 1
+
+Average capacity: 240.64 Mbits/s
+Average throughput: 0.01 Mbits/s (0.0% utilization)
+95th percentile per-packet queueing delay: 1 ms
+95th percentile signal delay: 1 ms
+MS_PER_BIN is too large for length of trace at /usr/local/bin/mm-throughput-graph line 183, <> line 2632.
+mm-throughput-graph exited with error. NOT uploading at ./run-trace-loss line 73.
+args: 240mbps_link, 0.000001, nodebug, ctcp
+Listening on :::9090
+setting bgrate
+Startind sender with bg_rate: 0, debug: 0, use_ctcp: 1
+cwnd: 1 dwnd: 0
+cwnd_: 1 dwnd_: 0
+background send period: 0 us
+Sending to 100.64.0.1:9090
+loss!
+timestamp: 166, average throughput: 0.137881 Mpbs
+timestamp: 332, average throughput: 0.275761 Mpbs
+timestamp: 499, average throughput: 0.960211 Mpbs
+timestamp: 665, average throughput: 3.78924 Mpbs
+timestamp: 831, average throughput: 15.1312 Mpbs
+timestamp: 933, average throughput: 56.4835 Mpbs
+timestamp: 1034, average throughput: 108.86 Mpbs
+loss!
+timestamp: 1135, average throughput: 168.928 Mpbs
+timestamp: 1242, average throughput: 160.776 Mpbs
+timestamp: 1344, average throughput: 177.494 Mpbs
+timestamp: 1445, average throughput: 185.795 Mpbs
+timestamp: 1546, average throughput: 192.609 Mpbs
+timestamp: 1647, average throughput: 193.466 Mpbs
+timestamp: 1748, average throughput: 193.951 Mpbs
+timestamp: 1849, average throughput: 195.61 Mpbs
+timestamp: 1952, average throughput: 184.802 Mpbs
+timestamp: 2053, average throughput: 189.789 Mpbs
+timestamp: 2154, average throughput: 192.453 Mpbs
+timestamp: 2256, average throughput: 190.079 Mpbs
+timestamp: 2358, average throughput: 194.222 Mpbs
+timestamp: 2459, average throughput: 195.689 Mpbs
+timestamp: 2560, average throughput: 189.907 Mpbs
+timestamp: 2661, average throughput: 195.627 Mpbs
+timestamp: 2762, average throughput: 191.009 Mpbs
+timestamp: 2864, average throughput: 189.806 Mpbs
+timestamp: 2965, average throughput: 193.878 Mpbs
+timestamp: 3066, average throughput: 194.384 Mpbs
+timestamp: 3167, average throughput: 194.523 Mpbs
+timestamp: 3268, average throughput: 191.194 Mpbs
+timestamp: 3369, average throughput: 196.384 Mpbs
+timestamp: 3470, average throughput: 197.167 Mpbs
+timestamp: 3571, average throughput: 196.028 Mpbs
+timestamp: 3672, average throughput: 195.062 Mpbs
+timestamp: 3773, average throughput: 198.205 Mpbs
+timestamp: 3874, average throughput: 197.17 Mpbs
+timestamp: 3975, average throughput: 194.897 Mpbs
+timestamp: 4076, average throughput: 199.539 Mpbs
+timestamp: 4181, average throughput: 189.197 Mpbs
+timestamp: 4282, average throughput: 188.814 Mpbs
+timestamp: 4383, average throughput: 194.514 Mpbs
+timestamp: 4484, average throughput: 196.911 Mpbs
+timestamp: 4585, average throughput: 196.864 Mpbs
+timestamp: 4687, average throughput: 193.294 Mpbs
+timestamp: 4788, average throughput: 198.171 Mpbs
+timestamp: 4889, average throughput: 196.927 Mpbs
+timestamp: 4992, average throughput: 195.238 Mpbs
+timestamp: 5094, average throughput: 194.557 Mpbs
+timestamp: 5195, average throughput: 197.726 Mpbs
+timestamp: 5296, average throughput: 199.48 Mpbs
+timestamp: 5397, average throughput: 197.865 Mpbs
+timestamp: 5498, average throughput: 199.776 Mpbs
+timestamp: 5599, average throughput: 198.523 Mpbs
+timestamp: 5700, average throughput: 198.576 Mpbs
+timestamp: 5801, average throughput: 198.206 Mpbs
+timestamp: 5902, average throughput: 197.964 Mpbs
+timestamp: 6003, average throughput: 200.506 Mpbs
+timestamp: 6104, average throughput: 202.4 Mpbs
+timestamp: 6206, average throughput: 201.28 Mpbs
+timestamp: 6307, average throughput: 202.39 Mpbs
+timestamp: 6408, average throughput: 198.583 Mpbs
+timestamp: 6509, average throughput: 200.079 Mpbs
+timestamp: 6610, average throughput: 197.767 Mpbs
+timestamp: 6711, average throughput: 199.105 Mpbs
+timestamp: 6812, average throughput: 201.246 Mpbs
+timestamp: 6914, average throughput: 200.591 Mpbs
+timestamp: 7016, average throughput: 199.702 Mpbs
+timestamp: 7117, average throughput: 198.939 Mpbs
+timestamp: 7218, average throughput: 204.732 Mpbs
+timestamp: 7323, average throughput: 196.807 Mpbs
+timestamp: 7424, average throughput: 200.551 Mpbs
+timestamp: 7525, average throughput: 201.346 Mpbs

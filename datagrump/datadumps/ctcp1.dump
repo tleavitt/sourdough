@@ -1,0 +1,69 @@
+args: 240mbps_link, 1, nodebug, ctcp
+Listening on :::9090
+setting bgrate
+Startind sender with bg_rate: 1, debug: 0, use_ctcp: 1
+cwnd: 1 dwnd: 0
+cwnd_: 1 dwnd_: 0
+background send period: 12000 us
+background send rate: 1 Mpbs
+Sending to 100.64.0.1:9090
+background traffic is: on
+loss!
+timestamp: 166, average throughput: 0.137881 Mpbs
+timestamp: 332, average throughput: 0.275761 Mpbs
+timestamp: 498, average throughput: 0.965164 Mpbs
+timestamp: 662, average throughput: 3.83207 Mpbs
+timestamp: 828, average throughput: 15.1526 Mpbs
+timestamp: 929, average throughput: 55.7888 Mpbs
+timestamp: 1030, average throughput: 107.72 Mpbs
+timestamp: 1131, average throughput: 168.754 Mpbs
+loss!
+timestamp: 1232, average throughput: 185.561 Mpbs
+loss!
+timestamp: 1333, average throughput: 206.881 Mpbs
+loss!
+timestamp: 1473, average throughput: 143.454 Mpbs
+timestamp: 1589, average throughput: 128.208 Mpbs
+timestamp: 1690, average throughput: 111.693 Mpbs
+timestamp: 1807, average throughput: 97.1724 Mpbs
+timestamp: 1920, average throughput: 87.9316 Mpbs
+timestamp: 2056, average throughput: 87.6806 Mpbs
+timestamp: 2157, average throughput: 90.3531 Mpbs
+timestamp: 2258, average throughput: 91.1796 Mpbs
+timestamp: 2386, average throughput: 81.4867 Mpbs
+timestamp: 2487, average throughput: 101.476 Mpbs
+timestamp: 2588, average throughput: 106.882 Mpbs
+timestamp: 2718, average throughput: 94.2437 Mpbs
+timestamp: 2820, average throughput: 101.481 Mpbs
+timestamp: 2921, average throughput: 110.567 Mpbs
+timestamp: 3047, average throughput: 94.1118 Mpbs
+timestamp: 3149, average throughput: 100.406 Mpbs
+timestamp: 3296, average throughput: 82.2384 Mpbs
+timestamp: 3398, average throughput: 96.8811 Mpbs
+timestamp: 3499, average throughput: 101.299 Mpbs
+timestamp: 3628, average throughput: 84.1388 Mpbs
+timestamp: 3730, average throughput: 95.8679 Mpbs
+timestamp: 3838, average throughput: 105.472 Mpbs
+timestamp: 3963, average throughput: 86.5191 Mpbs
+timestamp: 4064, average throughput: 98.7804 Mpbs
+timestamp: 4171, average throughput: 106.29 Mpbs
+timestamp: 4294, average throughput: 100.456 Mpbs
+timestamp: 4395, average throughput: 109.432 Mpbs
+timestamp: 4502, average throughput: 103.915 Mpbs
+timestamp: 4626, average throughput: 94.9188 Mpbs
+timestamp: 4727, average throughput: 107.059 Mpbs
+timestamp: 4832, average throughput: 96.8537 Mpbs
+timestamp: 4957, average throughput: 100.063 Mpbs
+timestamp: 5058, average throughput: 104.759 Mpbs
+timestamp: 5159, average throughput: 116.625 Mpbs
+timestamp: 5260, average throughput: 110.887 Mpbs
+timestamp: 5376, average throughput: 90.3679 Mpbs
+timestamp: 5477, average throughput: 105.577 Mpbs
+timestamp: 5578, average throughput: 116.751 Mpbs
+timestamp: 5708, average throughput: 92.1795 Mpbs
+timestamp: 5809, average throughput: 100.251 Mpbs
+timestamp: 5910, average throughput: 108.762 Mpbs
+timestamp: 6039, average throughput: 88.2698 Mpbs
+timestamp: 6145, average throughput: 107.347 Mpbs
+timestamp: 6246, average throughput: 104.152 Mpbs
+timestamp: 6369, average throughput: 103.621 Mpbs

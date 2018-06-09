@@ -1,0 +1,53 @@
+args: 240mbps_link, 50, nodebug, ctcp
+Listening on :::9090
+setting bgrate
+Startind sender with bg_rate: 50, debug: 0, use_ctcp: 1
+cwnd: 1 dwnd: 0
+cwnd_: 1 dwnd_: 0
+background send period: 240 us
+background send rate: 50 Mpbs
+Sending to 100.64.0.1:9090
+background traffic is: on
+timestamp: 164, average throughput: 0.139562 Mpbs
+timestamp: 328, average throughput: 0.362861 Mpbs
+timestamp: 492, average throughput: 1.41237 Mpbs
+timestamp: 657, average throughput: 5.60918 Mpbs
+timestamp: 821, average throughput: 22.5586 Mpbs
+timestamp: 922, average throughput: 81.6517 Mpbs
+timestamp: 1023, average throughput: 139.881 Mpbs
+timestamp: 1124, average throughput: 180.897 Mpbs
+timestamp: 1225, average throughput: 204.237 Mpbs
+timestamp: 1326, average throughput: 212.441 Mpbs
+timestamp: 1427, average throughput: 189.97 Mpbs
+timestamp: 1596, average throughput: 43.3029 Mpbs
+timestamp: 1760, average throughput: 13.3499 Mpbs
+timestamp: 1861, average throughput: 135.739 Mpbs
+timestamp: 1962, average throughput: 144.535 Mpbs
+timestamp: 2093, average throughput: 81.6022 Mpbs
+timestamp: 2194, average throughput: 166.249 Mpbs
+timestamp: 2342, average throughput: 114.658 Mpbs
+timestamp: 2443, average throughput: 173.676 Mpbs
+timestamp: 2544, average throughput: 106.89 Mpbs
+timestamp: 2645, average throughput: 134.323 Mpbs
+timestamp: 2746, average throughput: 149.6 Mpbs
+timestamp: 2861, average throughput: 108.416 Mpbs
+timestamp: 2962, average throughput: 91.8435 Mpbs
+timestamp: 3063, average throughput: 151.8 Mpbs
+timestamp: 3195, average throughput: 114.353 Mpbs
+timestamp: 3296, average throughput: 134.184 Mpbs
+timestamp: 3397, average throughput: 135.431 Mpbs
+timestamp: 3498, average throughput: 136.496 Mpbs
+timestamp: 3611, average throughput: 88.5505 Mpbs
+timestamp: 3712, average throughput: 122.86 Mpbs
+timestamp: 3813, average throughput: 156.281 Mpbs
+timestamp: 3963, average throughput: 66.4124 Mpbs
+timestamp: 4064, average throughput: 85.2556 Mpbs
+
+Average capacity: 240.70 Mbits/s
+Average throughput: 152.82 Mbits/s (63.5% utilization)
+95th percentile per-packet queueing delay: 150 ms
+95th percentile signal delay: 106 ms
+
+ done.
+
+

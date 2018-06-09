@@ -1,0 +1,92 @@
+#!/usr/bin/perl -w
+
+use strict;
+use LWP::UserAgent;
+use HTTP::Request::Common;
+
+my $trace_fn = $ARGV[ 0 ];
+if ( not defined $trace_fn ) {
+  die "Usage: $0 TRACE_FILENAME\n";
+}
+
+my $lossrate = $ARGV [ 1 ];
+if ( not defined $lossrate ) {
+  die "Usage: $0 TRACE_FILENAME LOSS_RATE_MBPS\n";
+}
+
+my $debug = $ARGV [ 2 ];
+if ( not defined $debug ) {
+  $debug = "nodebug";
+}
+
+my $use_ctcp = $ARGV [ 3 ];
+if ( not defined $use_ctcp ) {
+  $use_ctcp = "ctcp";
+}
+
+print qq{args: $trace_fn, $lossrate, $debug, $use_ctcp\n};
+
+my $receiver_pid = fork;
+
+if ( $receiver_pid < 0 ) {
+  die qq{$!};
+} elsif ( $receiver_pid == 0 ) {
+  # child
+  exec q{./receiver 9090} or die qq{$!};
+}
+
+my $tracedir = q{/usr/local/share/mahimahi/traces};
+
+# run the sender inside a linkshell and a delayshell
+my @command = qw{mm-delay 40 mm-loss uplink LR mm-link UPLINK DOWNLINK};
+# my @command = qw{mm-delay 40 mm-link UPLINK DOWNLINK};
+
+# display livegraphs if we seem to be running under X
+if ( defined $ENV{ 'DISPLAY' } ) {
+  push @command, qw{--meter-uplink --meter-uplink-delay};
+}
+
+push @command, qw{--uplink-log=/home/project/uplink_log -- bash -c};
+
+push @command, qq{./sender \$MAHIMAHI_BASE 9090 0 $debug $use_ctcp};
+
+# for the contest, we will send data over Verizon's downlink
+# (datagrump sender's uplink)
+
+die unless $command[ 4 ] eq "LR";
+$command[ 4 ] = qq{$lossrate};
+
+die unless $command[ 6 ] eq "UPLINK";
+$command[ 6 ] = qq{$tracedir/$trace_fn};
+
+die unless $command[ 7 ] eq "DOWNLINK";
+$command[ 7 ] = qq{$tracedir/$trace_fn};
+
+system @command;
+
+# kill the receiver
+kill 'INT', $receiver_pid;
+
+print "\n";
+
+# analyze performance locally
+system q{mm-throughput-graph 500 /home/project/uplink_log > /dev/null}
+  and die q{mm-throughput-graph exited with error. NOT uploading};
+
+print "\n";
+
+# gzip logfile
+#print q{Uploading data to server...};
+
+#my $www = LWP::UserAgent->new();
+#my $request = POST 'http://cs344g.keithw.org/cgi-bin/6829/upload-data',
+#  Content_Type => 'multipart/form-data',
+#  Content => [contents => ['/tmp/contest_uplink_log', $username]];
+
+#my $response = $www->request( $request );
+
+print qq{ done.\n\n};
+
+#print $response->decoded_content;
+
+print "\n";
