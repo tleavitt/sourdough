@@ -65,72 +65,6 @@ void Controller::datagram_was_sent( const uint64_t sequence_number,
 
 }
 
-void Controller::do_ewma_probe(const uint64_t tick_time) {
-
-  double cur_rate = double(recv_seqno - prev_tick_seqno) / double(tick_time - prev_tick_time);
-  rate_mean = cur_rate;
-  rate_var = sqrt(rate_mean);
-
-  if (debug_) {
-    cerr << "cur rate: " << cur_rate << endl
-    << "rate mean: " << rate_mean << ", rate var: " << rate_var << endl
-    << "cwnd: " << cwnd << endl;
-  }
-} 
-
-void Controller::do_ewma_steady(const uint64_t tick_time) {
-
-  double cur_rate = double(recv_seqno - prev_tick_seqno) / double(tick_time - prev_tick_time);
-
-  rate_mean = mean_smooth * cur_rate + (1 - mean_smooth) * rate_mean;
-
-  /* calculate the rate variance. */
-  double sqdev = (cur_rate - rate_mean) * (cur_rate - rate_mean);
-  rate_var = var_smooth * sqdev + (1 - var_smooth) * rate_var;
-
-  double cautious_rate = rate_mean - sqrt(rate_var) * confidence_mult;
-  /* expected number of bytes to clear the network in the next forecast milliseconds. */
-
-  /* calculate the forecast adaptively */
-  int forecast_ms = int(base_forecast_ms - sqrt(rate_var) * forecast_scaling);
-
-  double bdp = cur_rate * rtt_mean;
-
-  /* after 100 ms, the number of bytes drained from the queue will be 100 * R.
-     If we set cwnd to be exactly this value, a packet that enters the queue now
-     will exit the queue 100 ms later. */
-
-  /* Adaptively adjust the forecast */
-  // cwnd = (unsigned int)max(cautious_rate * forecast_ms, MIN_WINDOW_SIZE);
-  cwnd = (unsigned int)max(cautious_rate * forecast_ms, MIN_WINDOW_SIZE);
-
-  /* Bound cwnd to be less than the */
-  if (double(cwnd) > bdp_mult * bdp) {
-    if (debug_)
-      cerr << "bounding cwnd: " << cwnd << " to " << bdp_mult * bdp << endl;
-    cwnd = (unsigned int)max(bdp_mult * bdp, MIN_WINDOW_SIZE);
-  }
-
-  if (debug_) {
-    cerr << "cur rate: " << cur_rate << endl
-    << "rate mean: " << rate_mean << ", rate std: " << sqrt(rate_var) << endl
-    << "cautious_rate: " << cautious_rate << ", forecast: " << forecast_ms << endl
-    << "cwnd: " << cwnd << endl;
-  }
-} 
-
-void Controller::do_rtt_update(const uint64_t timestamp_ack_received, 
-                               const uint64_t send_timestamp_acked) {
-
-  double cur_rtt = double(timestamp_ack_received - send_timestamp_acked);
-  if (rtt_mean == 0)
-    rtt_mean = cur_rtt;
-  else
-    rtt_mean = rtt_smooth * cur_rtt + (1 - rtt_smooth) * rtt_mean;
-  if (debug_)
-    cerr << "rtt: " << rtt_mean << endl; 
-}
-
 void Controller::update_rtt(const uint64_t timestamp_ack_received, 
                                const uint64_t send_timestamp_acked) {
 
@@ -191,7 +125,6 @@ void Controller::ack_received( const uint64_t sequence_number_acked,
   }
 
   next_ack_expected_ = max(next_ack_expected_, sequence_number_acked + 1);
-  if (loss) cerr << "loss!" << endl;
 
   update_rtt(timestamp_ack_received, send_timestamp_acked);
   if (debug_ && loss)
